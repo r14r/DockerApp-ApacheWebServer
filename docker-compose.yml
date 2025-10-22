@@ -5,7 +5,7 @@ services:
     ports:
       - "40000:80"
     volumes:
-      - ./public:/var/www/html:ro
+      - ./public:/var/www/html
       - ./apache/php.ini:/usr/local/etc/php/conf.d/zz-overrides.ini:ro
       - ./apache/apache.conf:/etc/apache2/sites-available/000-default.conf:ro
     depends_on:
@@ -31,6 +31,20 @@ services:
       TZ: Europe/Berlin
     volumes:
       - db_data:/var/lib/mysql
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: strato_phpmyadmin
+    ports:
+      - "40020:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: secret
+      TZ: Europe/Berlin
+    depends_on:
+      - db
     restart: unless-stopped
 
 volumes:
