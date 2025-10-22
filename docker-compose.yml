@@ -1,0 +1,37 @@
+services:
+  web:
+    build: apache
+    container_name: strato_apache
+    ports:
+      - "40000:80"
+    volumes:
+      - ./public:/var/www/html:ro
+      - ./apache/php.ini:/usr/local/etc/php/conf.d/zz-overrides.ini:ro
+      - ./apache/apache.conf:/etc/apache2/sites-available/000-default.conf:ro
+    depends_on:
+      - db
+    environment:
+      TZ: Europe/Berlin
+      MYSQL_HOST: db
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+      MYSQL_DATABASE: appdb
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: strato_mysql
+    ports:
+      - "40010:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+      TZ: Europe/Berlin
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  db_data:
